@@ -35,9 +35,6 @@
   "I don't do a whole lot ... yet."
   [& args]
   (let [{:keys [options arguments errors summary]} (parse-opts args cli-options)]
-    (println options)
-    (println arguments)
-    (println errors)
     (cond
       (:help options) (exit 0 (usage summary))
       (empty? arguments) (exit 1 (usage summary))
