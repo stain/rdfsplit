@@ -7,7 +7,9 @@
   [org.apache.jena.riot RDFDataMgr RDFFormat]
   [org.apache.jena.riot.system StreamRDF StreamRDFWriter])
   (:require
-    [clojure.string :as string]))
+    [clojure.string :as string]
+    [org.tobereplaced.nio.file :refer [path create-directories! parent]]
+))
 
 ;RDFFormat fmt
 ;StreamRDFWriter.getWriterStream(output, fmt)
@@ -21,15 +23,11 @@
 (defn next-from-counter []
   (swap! counter inc))
 
-(defn paths-get [pathname & pathnames]
-  (Paths/get pathname (into-array pathnames)))
 
 (defn next-filename [options]
-  (let [path (paths-get (:output options) (str (next-from-counter) ".nq"))]
+  (let [path (path (:output options) (str (next-from-counter) ".nq"))]
     (if (:force options)
-      (Files/createDirectories
-        (.getParent path)
-        (into-array FileAttribute [])))
+      (create-directories! (parent path)))
     path))
   ;; TODO: Support other extensions like .ttl and .nq.gz
 
@@ -76,7 +74,7 @@
   (RDFDataMgr/parse streamrdf url))
 
 (def default-options {
-    :output "."
+    :output "." ; current directory
 })
 
 (defn rdfsplit
