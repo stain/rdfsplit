@@ -12,7 +12,7 @@ RUN lein uberjar && cp target/uberjar/*-standalone.jar /usr/local/lib/ && rm -rf
 
 # Make launcher script
 RUN echo "#!/bin/sh" > /usr/local/bin/rdfsplit
-RUN echo "java -jar" /usr/local/lib/*-standalone.jar  '"$@"' > /usr/local/bin/rdfsplit
+RUN echo "exec java -jar" /usr/local/lib/*-standalone.jar  '"$@"' > /usr/local/bin/rdfsplit
 RUN chmod 755 /usr/local/bin/rdfsplit
 
 RUN mkdir /data
