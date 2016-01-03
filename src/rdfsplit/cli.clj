@@ -29,11 +29,15 @@
   (str "The following errors occurred while parsing your command:\n\n"
        (string/join \newline errors)))
 
-(defn exit [status msg]
-  (if (> 0 status)
-    (binding [*out* *err*] (println msg))
-    (println msg))
-  (System/exit status))
+(defn exit
+  ([status]
+    (exit status nil))
+  ([status msg]
+    (if msg
+      (if (> 0 status)
+        (binding [*out* *err*] (println msg))
+        (println msg)))
+    (System/exit status)))
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -45,7 +49,7 @@
       errors (exit 1 (error-msg errors)))
     (try
       (rdfsplit arguments options)
-      (exit 0 "")
+      (exit 0)
     (catch Exception e
       (if (:verbose options)
         (.printStackTrace e))

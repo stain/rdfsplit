@@ -30,13 +30,17 @@
 (def output-buffer-size-bytes (* 5 1024 1024))
 
 (defn make-output-stream [options]
-  (BufferedOutputStream.
-    (Files/newOutputStream (next-filename options)
-      (into-array OpenOption
-        (if (:force options)
-          [StandardOpenOption/WRITE StandardOpenOption/CREATE StandardOpenOption/TRUNCATE_EXISTING]
-          [StandardOpenOption/WRITE StandardOpenOption/CREATE_NEW])))
-    output-buffer-size-bytes))
+  (let [filename (next-filename options)
+        outstream (BufferedOutputStream.
+          (Files/newOutputStream filename
+            (into-array OpenOption
+              (if (:force options)
+                [StandardOpenOption/WRITE StandardOpenOption/CREATE StandardOpenOption/TRUNCATE_EXISTING]
+                [StandardOpenOption/WRITE StandardOpenOption/CREATE_NEW])))
+          output-buffer-size-bytes)]
+    (if (:verbose options)
+      (println (.toString filename)))
+    outstream))
 
 (defn create-writer-stream [options]
   (StreamRDFWriter/getWriterStream (make-output-stream options) (get-format options)))
@@ -66,6 +70,8 @@
 (defn rdfsplit [files { :keys [output]
                         :or {output "."}
                         :as options } ]
-  (println "rdfsplit" "--output" output files)
+  (if (:verbose options)
+    (println "rdfsplit" "--output" output files))
   (doall (map (partial parse options (parse-rdfstream options)) files))
-  (println "Done."))
+  (if (:verbose options)
+    (println "Done.")))
