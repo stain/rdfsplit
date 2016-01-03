@@ -1,7 +1,7 @@
 (ns rdfsplit.core
   (:import
   [java.io BufferedOutputStream]
-  [java.nio.file Paths Files OpenOption]
+  [java.nio.file Paths Files OpenOption StandardOpenOption]
   [org.apache.jena.graph Node Triple]
   [org.apache.jena.riot RDFDataMgr RDFFormat]
   [org.apache.jena.riot.system StreamRDF StreamRDFWriter])
@@ -26,28 +26,39 @@
   ;; TODO: Support other extensions like .ttl and .nq.gz
   (paths-get (:output options) (str (next-from-counter) ".nq")))
 
-  ; is 5 MB buffer too much?
+; TODO: is 5 MB buffer too much?
 (def output-buffer-size-bytes (* 5 1024 1024))
 
 (defn make-output-stream [options]
   (BufferedOutputStream.
-    (Files/newOutputStream (next-filename options) (into-array OpenOption []))
+    (Files/newOutputStream (next-filename options)
+      (into-array OpenOption
+        (if (:force options)
+          [StandardOpenOption/WRITE StandardOpenOption/CREATE StandardOpenOption/TRUNCATE_EXISTING]
+          [StandardOpenOption/WRITE StandardOpenOption/CREATE_NEW])))
     output-buffer-size-bytes))
 
-(defn get-writer-stream [options]
+(defn create-writer-stream [options]
   (StreamRDFWriter/getWriterStream (make-output-stream options) (get-format options)))
 
+(defn get-writer-stream [options]
+  (create-writer-stream options))
+
+
 (defn- parse-rdfstream [options]
-  (proxy [StreamRDF] []
-    (base [base] nil)
-    (finish [] nil)
-    (prefix [prefix iri] nil)
-    (start [] nil)
-    (triple [triple]
-      (println triple))
-    (quad [quad]
-      (println quad)))
-  (get-writer-stream options))
+  (let [writer-stream (get-writer-stream options)]
+  ;; TODO: How to keep a long-living StreamRDF instance that can swap
+  ;; underlying writer-stream?
+    (proxy [StreamRDF] []
+      (base [base] nil)
+      (finish [] nil)
+      (prefix [prefix iri] nil)
+      (start [] nil)
+      (triple [triple]
+        (println triple))
+      (quad [quad]
+        (println quad)))
+    (get-writer-stream options)))
 
 (defn parse [options streamrdf url]
   (RDFDataMgr/parse streamrdf url))

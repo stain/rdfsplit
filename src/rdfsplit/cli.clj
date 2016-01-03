@@ -10,6 +10,7 @@
     "Output directory (default is current directory)"
     :default "."]
    ["-r" "--recursive" "Recurse into subdirectories"]
+   ["-f" "--force" "Overwrite any existing output files"]
    ["-h" "--help"]])
 
 (defn usage [options-summary]
