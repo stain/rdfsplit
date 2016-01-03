@@ -2,6 +2,7 @@
   (:import
   [java.io BufferedOutputStream]
   [java.nio.file Paths Files OpenOption StandardOpenOption]
+  [java.nio.file.attribute FileAttribute]
   [org.apache.jena.graph Node Triple]
   [org.apache.jena.riot RDFDataMgr RDFFormat]
   [org.apache.jena.riot.system StreamRDF StreamRDFWriter])
@@ -23,8 +24,14 @@
   (Paths/get pathname (into-array pathnames)))
 
 (defn next-filename [options]
+  (let [path (paths-get (:output options) (str (next-from-counter) ".nq"))]
+    (if (:force options)
+      (Files/createDirectories
+        (.getParent path)
+        (into-array FileAttribute [])))
+    path))
   ;; TODO: Support other extensions like .ttl and .nq.gz
-  (paths-get (:output options) (str (next-from-counter) ".nq")))
+
 
 ; TODO: is 5 MB buffer too much?
 (def output-buffer-size-bytes (* 5 1024 1024))
@@ -62,7 +69,7 @@
         (println triple))
       (quad [quad]
         (println quad)))
-    (get-writer-stream options)))
+    writer-stream))
 
 (defn parse [options streamrdf url]
   (RDFDataMgr/parse streamrdf url))

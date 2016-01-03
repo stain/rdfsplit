@@ -10,7 +10,7 @@
     "Output directory (default is current directory)"
     :default "."]
    ["-r" "--recursive" "Recurse into subdirectories"]
-   ["-f" "--force" "Overwrite any existing output files"]
+   ["-f" "--force" "Overwrite any existing output files. Make output directory if missing."]
    ["-v" "--verbose" "Verbose log output"]
    ["-h" "--help"]])
 
