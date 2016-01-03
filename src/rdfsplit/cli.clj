@@ -11,6 +11,7 @@
     :default "."]
    ["-r" "--recursive" "Recurse into subdirectories"]
    ["-f" "--force" "Overwrite any existing output files"]
+   ["-v" "--verbose" "Verbose log output"]
    ["-h" "--help"]])
 
 (defn usage [options-summary]
@@ -29,7 +30,9 @@
        (string/join \newline errors)))
 
 (defn exit [status msg]
-  (println msg)
+  (if (> 0 status)
+    (binding [*out* *err*] (println msg))
+    (println msg))
   (System/exit status))
 
 (defn -main
@@ -40,6 +43,10 @@
       (:help options) (exit 0 (usage summary))
       (empty? arguments) (exit 1 (usage summary))
       errors (exit 1 (error-msg errors)))
-    (rdfsplit arguments options)
-    (exit 0 "")
-    ))
+    (try
+      (rdfsplit arguments options)
+      (exit 0 "")
+    (catch Exception e
+      (if (:verbose options)
+        (.printStackTrace e))
+      (exit 2 (.toString e))))))
