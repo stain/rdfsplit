@@ -15,7 +15,8 @@
 (defn get-format [options]
   RDFFormat/NQUADS)
 
-(def counter (atom 0))
+; Start on -1 so it's 0 on first increment
+(def counter (atom -1))
 
 (defn next-from-counter []
   (swap! counter inc))
@@ -74,11 +75,16 @@
 (defn parse [options streamrdf url]
   (RDFDataMgr/parse streamrdf url))
 
-(defn rdfsplit [files { :keys [output]
-                        :or {output "."}
-                        :as options } ]
-  (if (:verbose options)
-    (println "rdfsplit" "--output" output files))
-  (doall (map (partial parse options (parse-rdfstream options)) files))
-  (if (:verbose options)
-    (println "Done.")))
+(def default-options {
+    :output "."
+})
+
+(defn rdfsplit
+  ([files] (rdfsplit files nil))
+  ([files options]
+    (let [options (merge default-options options)]
+      (if (:verbose options)
+        (println "rdfsplit" files))
+      (doall (map (partial parse options (parse-rdfstream options)) files))
+      (if (:verbose options)
+        (println "Done.")))))
