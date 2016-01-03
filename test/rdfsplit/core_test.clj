@@ -3,5 +3,7 @@
             [rdfsplit.core :refer :all]))
 
 (deftest a-test
-  (testing "FIXME, I fail."
+  
+  (testing "Splitting no files"
+    (rdfsplit [] {:output tmp})
     (is (= 0 1))))
