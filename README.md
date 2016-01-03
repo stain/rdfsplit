@@ -5,7 +5,7 @@ Split large RDF files into reasonably sized N-Quads files
 ## Docker
 
 This tool is also available as the [Docker](https://www.docker.com/) image
-[stain/rdfsplit](https://registry.hub.docker.com/u/stain/rdfsplit/).
+[stain/rdfsplit](https://hub.docker.com/r/stain/rdfsplit/).
 
 You should mount your RDF directory as the volume `/data`
 which will be the current directory within the Docker image.
@@ -15,10 +15,10 @@ to work, you should be in the exported directory when running docker.
 To use:
 
 ```
-    docker run stain/rdfsplit rdfsplit --help
-    cd /home/johndoe/rdfstuff
-    mkdir split
-    docker run stain/rdfsplit -v /home/johndoe/rdfstuff:/data rdfsplit --output split *.ttl
+docker run stain/rdfsplit rdfsplit --help
+cd /home/johndoe/rdfstuff
+mkdir split
+docker run stain/rdfsplit -v /home/johndoe/rdfstuff:/data rdfsplit --output split/ *.ttl
 ```
 
 ## Installation
@@ -48,7 +48,9 @@ Options:
 
 ## Examples
 
-
+```
+java -jar rdfsplit-0.1.0-standalone.jar --output split/ *.ttl
+```
 
 ### Contribute
 
