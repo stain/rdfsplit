@@ -6,12 +6,15 @@
   (:gen-class))
 
 (def cli-options
-  [["-o" "--output OUTPUTDIR"
-    "Output directory (default is current directory)"
-    :default "."]
+  [["-o" "--output OUTPUTDIR" "Output directory (default is current directory)" :default (default-options :output)]
    ["-r" "--recursive" "Recurse into subdirectories"]
    ["-f" "--force" "Overwrite any existing output files. Make output directory if missing."]
    ["-v" "--verbose" "Verbose log output"]
+   ["-n" "--max-quads QUADS" "Maximum number of quads per file" :default (default-options :max_quads)]
+   ["-b" "--max-bytes BYTES" "Rough maximum file size in bytes" :default (default-options :max_bytes)]
+   [nil "--no-compress" "Do not compress files using gzip"]
+   ["-g" "--graph URI" "Assign graph URI for triples in the default graph"]
+   [nil "--force-graph" "Assign provided --graph for all quads"]
    ["-h" "--help"]])
 
 (defn usage [options-summary]

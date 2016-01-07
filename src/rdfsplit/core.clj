@@ -75,6 +75,8 @@
 
 (def default-options {
     :output "." ; current directory
+    :max_quads (* 100 1000)
+    :max_bytes (* 128 1024 1024)    
 })
 
 (defn rdfsplit
